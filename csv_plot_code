@@ -1,0 +1,79 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+'''
+The goal of the code was to be able to plot specific data from a csv in the smallest amount of code
+I managed to shorten the main processing of the file to about 11 lines 
+Total amount of code before additions was around 38 lines
+Additions were to make the graph pretty, save it off and add comments
+
+Steps:
+-Read in a .csv using the absolute path of the file.
+-Place all column names in a list.
+-Remove unnecessary data. (EX. 'Unnamed: 14')
+-Create two lists.
+    -plotThis[] will hold a list of lists, each list will be 4 lines of data from the .csv.
+    -totalPoints[] will hold a list of calculated data (A sum of the data).
+-For each name in the names list:
+    -Initialize a new list, createList[]. This list will hold the 4 lines of data read from the column.
+        -Check for NAN value. If NAN set the value to 0.0.
+        -For each line of data, append the current data to createList. 
+        -currPlayerTotal will hold the current sum of each line.
+    -Append the currPlayerTotal to the totalPoints list.
+    -Append the createList to the linePlot list, creating the list of lists.
+
+*LINE GRAPH*
+-Set the window size of the line graph.
+-Plot each list on the line graph.
+-Save the file.
+
+*BAR GRAPH*
+-Set the title of the bar graph.
+-Set the window size.
+-Set the X axis label.
+-Set the Y axis label.
+-Set the Y axis values every 2nd value from 0-36.
+-Set the bar line size.
+-At each name in names plot the data from totalPoints.
+*Note the names list exists from when we read in each column from the .csv.
+-Save the file.
+
+*paths were removed
+'''
+
+ff_csv = pd.read_csv('path')
+names = []
+for column in ff_csv:
+    names.append(column)
+
+'#remove unnecessary columns'
+del names[0]
+del names[14:]
+
+linePlot = []
+totalPoints = []
+for name in names:
+    createList = []
+    currPlayerTotal = 0
+    for line in ff_csv.loc[18:21, name]:
+        if np.isnan(line):
+            line = 0.0
+        createList.append(line)
+        currPlayerTotal += line
+    totalPoints.append(currPlayerTotal)
+    linePlot.append(createList)
+
+plt.figure(figsize=(15, 8))
+for dataList in linePlot:
+    plt.plot(dataList)
+plt.savefig("path")
+
+plt.title("TOTAL WINS")
+plt.figure(figsize=(17, 5))
+plt.xlabel("Player")
+plt.ylabel("Number of Wins")
+plt.yticks(np.arange(0, 36, step=2))
+plt.margins(0.02)
+plt.bar(names, totalPoints)
+plt.savefig("path")
